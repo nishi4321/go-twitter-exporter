@@ -21,6 +21,7 @@ func InitExporter() {
 
 type myCollector struct {
 	FollowersCount *prometheus.Desc
+	TweetCount     *prometheus.Desc
 }
 
 func newMyCollector() *myCollector {
@@ -28,6 +29,12 @@ func newMyCollector() *myCollector {
 		FollowersCount: prometheus.NewDesc(
 			"GoTwitterExporter_Followers_Count",
 			"A number of twitter follower count by id",
+			[]string{"TwitterID"},
+			nil,
+		),
+		TweetCount: prometheus.NewDesc(
+			"GoTwitterExporter_Tweets_Count",
+			"A number of twitter tweet count by id",
 			[]string{"TwitterID"},
 			nil,
 		),
@@ -47,6 +54,12 @@ func (c myCollector) Collect(ch chan<- prometheus.Metric) {
 			c.FollowersCount,
 			prometheus.GaugeValue,
 			float64(profile.PublicMetrics.FollowersCount),
+			profile.UserName,
+		)
+		ch <- prometheus.MustNewConstMetric(
+			c.TweetCount,
+			prometheus.GaugeValue,
+			float64(profile.PublicMetrics.TweetCount),
 			profile.UserName,
 		)
 	}
