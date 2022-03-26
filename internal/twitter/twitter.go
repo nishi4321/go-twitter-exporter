@@ -7,7 +7,7 @@ import (
 	"github.com/sivchari/gotwtr"
 )
 
-func GetFollowersCount(targetId string) int {
+func GetMultipleUserProfiles(targetIds []string) gotwtr.UsersResponse {
 	client := gotwtr.New(config.GetConfig().TWITTER.TWITTER_BEARER_TOKEN)
 
 	opts := &gotwtr.RetrieveUserOption{
@@ -15,9 +15,9 @@ func GetFollowersCount(targetId string) int {
 			gotwtr.UserFieldPublicMetrics,
 		},
 	}
-	un, err := client.RetrieveSingleUserWithUserName(context.Background(), targetId, opts)
+	un, err := client.RetrieveMultipleUsersWithUserNames(context.Background(), targetIds, opts)
 	if err != nil {
 		panic(err)
 	}
-	return *&un.User.PublicMetrics.FollowersCount
+	return *un
 }

@@ -19,11 +19,9 @@ func InitExporter() {
 	log.Fatal(http.ListenAndServe(":2020", nil))
 }
 
-// Metricsの定義
-
 type myCollector struct {
 	FollowersCount *prometheus.Desc
-} // 今回働いてくれるインスタンス
+}
 
 func newMyCollector() *myCollector {
 	return &myCollector{
@@ -36,22 +34,20 @@ func newMyCollector() *myCollector {
 	}
 }
 
-// Describe と Collect
-
 func (c myCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.FollowersCount
 }
 
 func (c myCollector) Collect(ch chan<- prometheus.Metric) {
 	conf := config.GetConfig()
-	for _, targetId := range conf.TARGET {
-		followersCount := twitter.GetFollowersCount(targetId)
+	userProfiles := twitter.GetMultipleUserProfiles(conf.TARGET)
 
+	for _, profile := range userProfiles.Users {
 		ch <- prometheus.MustNewConstMetric(
 			c.FollowersCount,
 			prometheus.GaugeValue,
-			float64(followersCount),
-			targetId,
+			float64(profile.PublicMetrics.FollowersCount),
+			profile.UserName,
 		)
 	}
 }
