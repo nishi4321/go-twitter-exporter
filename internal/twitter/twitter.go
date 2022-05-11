@@ -3,6 +3,7 @@ package twitter
 import (
 	"context"
 	"go-twitter-exporter/internal/config"
+	"log"
 
 	"github.com/sivchari/gotwtr"
 )
@@ -17,7 +18,7 @@ func GetMultipleUserProfiles(targetIds []string) gotwtr.UsersResponse {
 	}
 	un, err := client.RetrieveMultipleUsersWithUserNames(context.Background(), targetIds, opts)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	return *un
 }
